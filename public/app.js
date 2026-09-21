@@ -40,11 +40,9 @@ function renderArchive() {
   $('archivePrevious').disabled = !archivePage.hasPrevious; $('archiveNext').disabled = !archivePage.hasNext;
   $('archiveGrid').innerHTML = archive.length ? archive.map(item => {
     const image = imagesFor(item)[0];
-    const params = Object.entries(item.params || {}).filter(([key]) => !['prompt', 'negative', 'model'].includes(key)).map(([key, value]) => `<span><b>${escapeHtml(key)}</b>${escapeHtml(value)}</span>`).join('');
-    return `<article class="archive-card"><button class="archive-image" data-id="${item.id}" ${image ? '' : 'disabled'}>${image ? `<img src="${image}" alt="Generated image">` : `<span class="pending">${escapeHtml(item.status.toUpperCase())}</span>`}</button><div class="archive-card-body"><div class="archive-card-head"><span class="model-tag">${escapeHtml(item.model === 'illustrious' ? 'SDXL · ILLUSTRIOUS' : 'FLUX')}</span><time>${dateFor(item)}</time></div><p class="archive-prompt">${escapeHtml(item.prompt)}</p><p class="archive-negative"><b>Negative</b> ${escapeHtml(item.negative || 'None')}</p><div class="params">${params}</div><button class="ghost reuse-button" data-reuse="${item.id}">Reuse parameters</button></div></article>`;
+    return `<article class="archive-card" data-id="${item.id}"><button class="archive-image" ${image ? '' : 'disabled'}>${image ? `<img src="${image}" alt="Generated image">` : `<span class="pending">${escapeHtml(item.status.toUpperCase())}</span>`}</button><div class="archive-card-body"><div class="archive-card-head"><span class="model-tag">${escapeHtml(item.model === 'illustrious' ? 'SDXL · ILLUSTRIOUS' : 'FLUX')}</span><time>${dateFor(item)}</time></div><p class="archive-prompt">${escapeHtml(item.prompt)}</p></div></article>`;
   }).join('') : '<div class="archive-empty">No generations match these filters.</div>';
-  document.querySelectorAll('.archive-image[data-id]').forEach(el => el.onclick = () => openDetail(archive.find(item => item.id == el.dataset.id)));
-  document.querySelectorAll('[data-reuse]').forEach(el => el.onclick = () => { reuse(Number(el.dataset.reuse)); showStudio(); });
+  document.querySelectorAll('.archive-card[data-id]').forEach(el => el.onclick = () => openDetail(archive.find(item => item.id == el.dataset.id)));
 }
 
 function openDetail(item) {
@@ -80,6 +78,7 @@ $('model').onchange = fillSettings;
 $('applyPrompt').onclick = () => { const value = promptSets[$('promptPreset').value]; if (value) $('prompt').value = value; };
 $('applyNegative').onclick = () => { const value = negativeSets[$('negativePreset').value]; if (value) $('negative').value = value; };
 $('openHistory').onclick = showHistory; $('backToStudio').onclick = showStudio;
+$('brandHome').onclick = event => { event.preventDefault(); showStudio(); };
 $('historyModel').onchange = () => { archivePage.offset = 0; loadArchive().catch(renderArchiveError); }; $('historyStatus').onchange = () => { archivePage.offset = 0; loadArchive().catch(renderArchiveError); }; $('historySort').onchange = () => { archivePage.offset = 0; loadArchive().catch(renderArchiveError); };
 let searchTimer; $('historySearch').oninput = () => { clearTimeout(searchTimer); searchTimer = setTimeout(() => { archivePage.offset = 0; loadArchive().catch(renderArchiveError); }, 250); };
 $('archivePrevious').onclick = () => { archivePage.offset = Math.max(0, archivePage.offset - archivePage.limit); loadArchive().catch(renderArchiveError); };
