@@ -1,0 +1,15 @@
+{
+  "name": "image-generator-web",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Web UI for image generation via local ComfyUI workflows",
+  "type": "module",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "better-sqlite3": "^11.8.1",
+    "express": "^4.21.2"
+  }
+}
